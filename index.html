@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="HierarchiVision - Premium Strategic Vision Board">
+    <meta name="theme-color" content="#1a0f2e">
+    <title>HierarchiVision - Premium Vision Board</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            font-family: "Montserrat", sans-serif;
+            background: linear-gradient(135deg, #a8e6d9 0%, #20b9c4 50%, #0d9b98 100%);
+            color: #1a4d4a;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.8s ease-out;
+            min-height: 100vh;
+            width: 100%;
+            flex-direction: column;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 20px rgba(218, 165, 255, 0.5); }
+            50% { text-shadow: 0 0 40px rgba(218, 165, 255, 0.8); }
+        }
+
+        /* PREMIUM FRAME STYLES */
+        .ornate-frame {
+            position: relative;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.4) 100%);
+            border: 2px solid #d4af37;
+            border-radius: 20px;
+            box-shadow: 
+                0 0 60px rgba(13, 155, 152, 0.2),
+                inset 0 0 60px rgba(255, 255, 255, 0.1),
+                0 20px 60px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .ornate-frame::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            pointer-events: none;
+        }
+
+        .ornate-frame::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 30px;
+            height: 30px;
+            border-top: 2px solid #d4af37;
+            border-left: 2px solid #d4af37;
+            pointer-events: none;
+        }
+
+        /* SPLASH SCREEN */
+        #splashScreen {
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #a8e6d9 0%, #20b9c4 50%, #0d9b98 100%);
+        }
+
+        .splash-header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: slideUp 1s ease-out;
+        }
+
+        .splash-header .emoji {
+            font-size: 100px;
+            margin-bottom: 30px;
+            animation: float 4s ease-in-out infinite;
+            filter: drop-shadow(0 0 30px rgba(218, 165, 255, 0.5));
+        }
+
+        .splash-header h1 {
+            font-family: "Cormorant Garamond", serif;
+            font-size: clamp(2rem, 8vw, 3.5rem);
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #d4af37 0%, #ffd700 50%, #d4af37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .splash-header p {
+            font-size: 1.35rem;
+            color: #0d7a77;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .quiz-container {
+            max-width: 700px;
+            width: 100%;
+            margin-bottom: 40px;
+        }
+
+        .season-option {
+            width: 100%;
+            padding: 30px;
+            margin-bottom: 20px;
+            border: 2px solid #d4af37;
+            border-radius: 15px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.2) 100%);
+            cursor: pointer;
+            transition: all 0.4s ease;
+            animation: slideUp 0.6s ease-out backwards;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            color: #0d7a77;
+        }
+
+        .season-option:hover {
+            border-color: #ffd700;
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(218, 165, 255, 0.3);
+        }
+
+        .season-option.active {
+            border-color: #ffd700;
+            box-shadow: 0 0 40px rgba(218, 165, 255, 0.6);
+        }
+
+        .season-option.spring.active { 
+            background: linear-gradient(135deg, rgba(74, 222, 128, 0.4) 0%, rgba(16, 185, 129, 0.4) 100%);
+        }
+        .season-option.summer.active { 
+            background: linear-gradient(135deg, rgba(250, 204, 21, 0.4) 0%, rgba(245, 158, 11, 0.4) 100%);
+        }
+        .season-option.autumn.active { 
+            background: linear-gradient(135deg, rgba(217, 119, 6, 0.4) 0%, rgba(220, 38, 38, 0.4) 100%);
+        }
+        .season-option.winter.active { 
+            background: linear-gradient(135deg, rgba(96, 165, 250, 0.4) 0%, rgba(6, 182, 212, 0.4) 100%);
+        }
+
+        .season-option-emoji { 
+            font-size: 3.5rem; 
+            margin-bottom: 15px; 
+            display: block;
+            filter: drop-shadow(0 0 20px rgba(218, 165, 255, 0.4));
+        }
+        .season-option-title { 
+            font-weight: 700; 
+            font-size: 1.35rem; 
+            margin-bottom: 10px;
+            font-family: "Cormorant Garamond", serif;
+            letter-spacing: 1px;
+            color: #0d7a77;
+        }
+        .season-option-desc { 
+            font-size: 0.95rem; 
+            opacity: 0.85;
+            font-weight: 300;
+            color: #0d7a77;
+        }
+
+        .btn-primary {
+            padding: 18px 50px;
+            font-size: 1.15rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #d4af37 0%, #ffd700 100%);
+            color: #1a0f2e;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 15px 40px rgba(212, 175, 55, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: "Montserrat", sans-serif;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.6);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* BUTTONS */
+        .btn-back {
+            margin-bottom: 20px;
+            padding: 12px 25px;
+            background: rgba(212, 175, 55, 0.2);
+            color: #d4af37;
+            border: 1px solid #d4af37;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .btn-back:hover {
+            background: rgba(212, 175, 55, 0.3);
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-action {
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #d4af37 0%, #ffd700 100%);
+            color: #1a0f2e;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-action:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 45px rgba(212, 175, 55, 0.5);
+        }
+
+        .btn-action.secondary {
+            background: linear-gradient(135deg, rgba(218, 165, 255, 0.3) 0%, rgba(212, 175, 55, 0.3) 100%);
+            color: #d4af37;
+            border: 1px solid #d4af37;
+        }
+
+        /* CONTENT SECTIONS */
+        .content-section {
+            flex: 1;
+            overflow-y: auto;
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        h2 {
+            font-family: "Cormorant Garamond", serif;
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            color: #d4af37;
+            margin-bottom: 10px;
+            text-align: center;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        h2 + p {
+            color: #0d7a77;
+            font-size: 1.1rem;
+            text-align: center;
+            margin-bottom: 40px;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        /* GAME THEORY CARDS */
+        .game-theory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .game-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.3) 100%);
+            border: 2px solid rgba(212, 175, 55, 0.5);
+            border-radius: 15px;
+            padding: 35px;
+            animation: slideUp 0.6s ease-out backwards;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 15px 40px rgba(13, 155, 152, 0.1);
+        }
+
+        .game-card:hover {
+            border-color: #d4af37;
+            box-shadow: 0 20px 60px rgba(218, 165, 255, 0.3);
+            transform: translateY(-8px);
+        }
+
+        .game-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 15px rgba(218, 165, 255, 0.4));
+        }
+
+        .game-layer {
+            font-size: 0.8rem;
+            color: #d4af37;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            letter-spacing: 1.5px;
+        }
+
+        .game-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ffd700;
+            margin-bottom: 12px;
+            font-family: "Cormorant Garamond", serif;
+        }
+
+        .game-concept {
+            font-size: 0.95rem;
+            color: #0d7a77;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .game-strategy {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(218, 165, 255, 0.1) 100%);
+            border-left: 3px solid #d4af37;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #daa7ff;
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        /* STRATEGIES GRID */
+        .strategies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .strategy-tile {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.4) 100%);
+            border: 2px solid rgba(13, 155, 152, 0.6);
+            border-radius: 12px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            animation: slideUp 0.6s ease-out backwards;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(13, 155, 152, 0.1);
+        }
+
+        .strategy-tile.selected {
+            border-color: #0d9b98;
+            background: linear-gradient(135deg, rgba(13, 155, 152, 0.2) 0%, rgba(32, 185, 196, 0.2) 100%);
+            box-shadow: 0 0 30px rgba(13, 155, 152, 0.4);
+        }
+
+        .strategy-tile:hover {
+            border-color: #0d9b98;
+            transform: translateY(-6px);
+            box-shadow: 0 15px 45px rgba(13, 155, 152, 0.25);
+        }
+
+        .strategy-checkbox {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            accent-color: #d4af37;
+        }
+
+        .strategy-category {
+            display: inline-block;
+            padding: 6px 12px;
+            background: rgba(212, 175, 55, 0.2);
+            border: 1px solid #d4af37;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            color: #d4af37;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .strategy-title {
+            font-weight: 700;
+            color: #ffd700;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+            font-family: "Cormorant Garamond", serif;
+        }
+
+        .strategy-description {
+            color: #0d7a77;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        /* SUMMARY & CHOSEN */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(218, 165, 255, 0.15) 100%);
+            border: 2px solid #d4af37;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            animation: slideUp 0.6s ease-out backwards;
+            backdrop-filter: blur(10px);
+        }
+
+        .summary-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #d4af37;
+            font-family: "Cormorant Garamond", serif;
+        }
+
+        .summary-label {
+            font-size: 0.85rem;
+            color: #daa7ff;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* CHOSEN LIST */
+        .chosen-list {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.4) 100%);
+            border: 2px solid #0d9b98;
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 40px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 15px 40px rgba(13, 155, 152, 0.15);
+        }
+
+        .chosen-list h3 {
+            color: #0d7a77;
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+            font-family: "Cormorant Garamond", serif;
+        }
+
+        .chosen-by-layer {
+            margin-bottom: 30px;
+        }
+
+        .layer-name {
+            font-weight: 600;
+            color: #0d7a77;
+            margin-bottom: 15px;
+            font-size: 1.15rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .chosen-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .chosen-item {
+            background: linear-gradient(135deg, rgba(13, 155, 152, 0.2) 0%, rgba(32, 185, 196, 0.2) 100%);
+            padding: 12px 18px;
+            border-radius: 8px;
+            color: #0d7a77;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid rgba(13, 155, 152, 0.3);
+        }
+
+        .chosen-item-remove {
+            background: none;
+            border: none;
+            color: #0d9b98;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+        }
+
+        .chosen-item-remove:hover {
+            color: #ff6b6b;
+        }
+
+        /* PINBOARD */
+        .pinboard-container {
+            background: linear-gradient(135deg, #c4a57b 0%, #d4a574 50%, #b8956a 100%);
+            border: 20px solid #8B4513;
+            border-radius: 15px;
+            box-shadow: 
+                inset 0 0 60px rgba(0,0,0,0.3),
+                0 20px 80px rgba(0,0,0,0.6),
+                0 0 60px rgba(218, 165, 255, 0.2);
+            min-height: 700px;
+            position: relative;
+            overflow: hidden;
+            margin: 30px auto;
+            max-width: 1400px;
+            width: 90%;
+        }
+
+        .pinboard-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,0,0,.03) 2px, rgba(0,0,0,.03) 4px),
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.03) 2px, rgba(0,0,0,.03) 4px);
+            pointer-events: none;
+        }
+
+        .vision-pinboard {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            padding: 40px;
+            position: relative;
+            z-index: 1;
+            align-content: flex-start;
+        }
+
+        .pinned-image {
+            position: relative;
+            background: white;
+            padding: 10px;
+            border-radius: 3px;
+            box-shadow: 0 12px 25px rgba(0,0,0,0.3);
+            cursor: move;
+            transition: all 0.3s ease;
+            animation: slideUp 0.6s ease-out backwards;
+            user-select: none;
+        }
+
+        .pinned-image:hover {
+            box-shadow: 0 16px 35px rgba(0,0,0,0.4);
+        }
+
+        .pinned-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 2px;
+            transform: rotate(var(--rotation, 0deg));
+            transition: transform 0.3s ease;
+            pointer-events: none;
+        }
+
+        .pinned-image::before {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle at 30% 30%, #ffeb3b, #fbc02d);
+            border-radius: 50%;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.5), inset -1px -1px 3px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        /* UPLOAD */
+        .upload-section {
+            background: linear-gradient(135deg, #c4a57b 0%, #d4a574 100%);
+            border: 3px dashed #8B7355;
+            border-radius: 15px;
+            padding: 50px;
+            text-align: center;
+            margin: 30px auto;
+            max-width: 900px;
+            width: 90%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 40px rgba(212, 175, 55, 0.2);
+        }
+
+        .upload-section:hover {
+            border-color: #d4a574;
+            background: linear-gradient(135deg, #d4a574 0%, #e8b394 100%);
+            transform: translateY(-4px);
+        }
+
+        .upload-section p {
+            color: #2a2a2a;
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .file-input-label {
+            padding: 14px 35px;
+            background: #8B7355;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-block;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .file-input-label:hover {
+            background: #6b5444;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        #imageFileInput {
+            display: none;
+        }
+
+        /* ACTION BAR */
+        .action-bar {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 40px 30px;
+            background: linear-gradient(135deg, #a8e6d9 0%, #20b9c4 100%);
+            position: sticky;
+            bottom: 0;
+            z-index: 100;
+            border-top: 2px solid #d4af37;
+            box-shadow: 0 -10px 40px rgba(218, 165, 255, 0.2);
+        }
+
+        .action-bar .btn-action {
+            flex: 0 1 auto;
+        }
+
+        .empty-board {
+            text-align: center;
+            padding: 100px 20px;
+            color: #8B7355;
+        }
+
+        .empty-board-icon {
+            font-size: 5rem;
+            margin-bottom: 25px;
+            opacity: 0.5;
+            filter: drop-shadow(0 0 20px rgba(218, 165, 255, 0.2));
+        }
+
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, rgba(58, 38, 90, 0.95) 0%, rgba(75, 50, 110, 0.95) 100%);
+            padding: 40px;
+            border-radius: 15px;
+            color: white;
+            z-index: 10000;
+            display: none;
+            text-align: center;
+            border: 2px solid #d4af37;
+            box-shadow: 0 0 60px rgba(218, 165, 255, 0.5);
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .loading-spinner {
+            border: 4px solid #d4af37;
+            border-top: 4px solid #ffd700;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .strategies-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .game-theory-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-bar {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .action-bar .btn-action {
+                width: 100%;
+                justify-content: center;
+            }
+
+            h2 {
+                font-size: 2rem;
+            }
+
+            .btn-action {
+                font-size: 0.85rem;
+                padding: 12px 20px;
+            }
+
+            .content-section {
+                padding: 20px;
+            }
+
+            .ornate-frame {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading" id="loading">
+        <div class="loading-spinner"></div>
+        <p id="loadingText" style="color: #d4af37; margin-top: 15px;">Processing...</p>
+    </div>
+
+    <!-- SPLASH SCREEN -->
+    <div id="splashScreen" class="screen active">
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; padding: 20px;">
+            <div class="splash-header">
+                <span class="emoji">✨</span>
+                <h1>HIERARCHIVISION</h1>
+                <p>Premium Strategic Vision Board</p>
+            </div>
+
+            <div class="quiz-container">
+                <div style="text-align: center; font-size: 1.3rem; margin-bottom: 40px; color: #d4af37; font-weight: 600; letter-spacing: 1px;">CHOOSE YOUR SEASON</div>
+                
+                <button class="season-option spring" data-season="Spring">
+                    <span class="season-option-emoji">🌱</span>
+                    <div class="season-option-title">SPRING</div>
+                    <div class="season-option-desc">Fresh Growth & New Beginnings</div>
+                </button>
+
+                <button class="season-option summer" data-season="Summer">
+                    <span class="season-option-emoji">☀️</span>
+                    <div class="season-option-title">SUMMER</div>
+                    <div class="season-option-desc">Peak Energy & Momentum</div>
+                </button>
+
+                <button class="season-option autumn" data-season="Autumn">
+                    <span class="season-option-emoji">🍂</span>
+                    <div class="season-option-title">AUTUMN</div>
+                    <div class="season-option-desc">Harvest & Reflection</div>
+                </button>
+
+                <button class="season-option winter" data-season="Winter">
+                    <span class="season-option-emoji">❄️</span>
+                    <div class="season-option-title">WINTER</div>
+                    <div class="season-option-desc">Rest & Renewal</div>
+                </button>
+            </div>
+
+            <button id="startBtn" class="btn-primary" disabled>BEGIN YOUR JOURNEY</button>
+        </div>
+    </div>
+
+    <!-- GAME THEORY SCREEN -->
+    <div id="gameTheoryScreen" class="screen">
+        <div class="content-section">
+            <button class="btn-back" onclick="goToSplash()">← BACK</button>
+            <h2>Strategic Game Theory</h2>
+            <p>Understand the principles behind your seasonal hierarchy</p>
+
+            <div class="game-theory-grid" id="gameTheoryGrid"></div>
+            <div class="ornate-frame" id="seasonStrategyBox" style="margin: 40px 0;"></div>
+
+            <div style="text-align: center; margin: 50px 0;">
+                <button class="btn-primary" onclick="goToStrategies()">PROCEED →</button>
+            </div>
+        </div>
+
+        <div class="action-bar">
+            <button class="btn-action" onclick="goToSplash()">← BACK</button>
+            <button class="btn-action secondary" onclick="takeScreenshot('gameTheoryScreen', 'game-theory')">📸 SCREENSHOT</button>
+            <button class="btn-action secondary" onclick="shareScreen('Game Theory')">📤 SHARE</button>
+            <button class="btn-action" onclick="goToStrategies()">CONTINUE →</button>
+        </div>
+    </div>
+
+    <!-- STRATEGIES SCREEN -->
+    <div id="strategiesScreen" class="screen">
+        <div class="content-section">
+            <button class="btn-back" onclick="goToGameTheory()">← BACK</button>
+            <h2>Select Your Strategies</h2>
+            <p>Choose strategies aligned with your seasonal game</p>
+
+            <div style="display: flex; gap: 15px; margin-bottom: 40px; flex-wrap: wrap; justify-content: center;" id="seasonFilter"></div>
+            <div class="strategies-grid" id="strategiesGrid"></div>
+        </div>
+
+        <div class="action-bar">
+            <button class="btn-action" onclick="goToGameTheory()">← BACK</button>
+            <button class="btn-action secondary" onclick="takeScreenshot('strategiesScreen', 'strategies')">📸 SCREENSHOT</button>
+            <button class="btn-action secondary" onclick="shareScreen('Strategies')">📤 SHARE</button>
+            <button class="btn-action" onclick="goToChosen()">VIEW CHOSEN (<span id="chosenCount">0</span>) →</button>
+        </div>
+    </div>
+
+    <!-- CHOSEN STRATEGIES SCREEN -->
+    <div id="chosenScreen" class="screen">
+        <div class="content-section">
+            <button class="btn-back" onclick="goToStrategies()">← BACK</button>
+            <h2>Your Chosen Strategies</h2>
+            <p>Review your strategic selections</p>
+
+            <div class="summary-grid" id="chosenSummary"></div>
+            <div class="chosen-list">
+                <h3>Strategic Selections</h3>
+                <div id="chosenListContent"></div>
+            </div>
+        </div>
+
+        <div class="action-bar">
+            <button class="btn-action" onclick="goToStrategies()">← BACK</button>
+            <button class="btn-action secondary" onclick="takeScreenshot('chosenScreen', 'chosen')">📸 SCREENSHOT</button>
+            <button class="btn-action secondary" onclick="shareScreen('My Choices')">📤 SHARE</button>
+            <button class="btn-action" onclick="goToVisionBoard()">CREATE BOARD →</button>
+        </div>
+    </div>
+
+    <!-- VISION BOARD SCREEN -->
+    <div id="visionBoardScreen" class="screen">
+        <div class="content-section">
+            <button class="btn-back" onclick="goToChosen()">← BACK</button>
+            <h2>Craft Your Vision</h2>
+            <p>Create your premium vision board</p>
+
+            <div class="upload-section" onclick="document.getElementById('imageFileInput').click()">
+                <p>✨ UPLOAD YOUR INSPIRATION ✨</p>
+                <p style="font-size: 0.95rem; margin-bottom: 20px;">Click or drag images</p>
+                <label class="file-input-label">CHOOSE IMAGES</label>
+                <input type="file" id="imageFileInput" multiple accept="image/*">
+            </div>
+
+            <div class="pinboard-container">
+                <div class="vision-pinboard" id="visionPinboard"></div>
+            </div>
+        </div>
+
+        <div class="action-bar">
+            <button class="btn-action" onclick="goToChosen()">← BACK</button>
+            <button class="btn-action secondary" onclick="takeScreenshot('visionBoardScreen', 'vision-board')">📸 SCREENSHOT</button>
+            <button class="btn-action secondary" onclick="shareScreen('My Vision')">📤 SHARE</button>
+            <button class="btn-action" onclick="saveBoard()">💾 SAVE</button>
+            <button class="btn-action" onclick="exportToPDF()">📄 PDF</button>
+            <button class="btn-action" onclick="downloadBoard()">⬇️ DOWNLOAD</button>
+        </div>
+    </div>
+
+    <script>
+        const app = {
+            currentSeason: null,
+            chosenStrategies: [],
+            visionBoardImages: [],
+            strategies: {
+                Spring: {
+                    physiological: [
+                        {title: "Plant-Based Eating", description: "Embrace spring vegetables and fresh produce."},
+                        {title: "Outdoor Movement", description: "Take advantage of mild weather."},
+                        {title: "Hydration Ritual", description: "Reset water intake with herbal teas."}
+                    ],
+                    safety: [
+                        {title: "Spring Cleaning", description: "Deep clean your space to create order."},
+                        {title: "New Budget", description: "Spring is renewal - refresh your financial plan."},
+                        {title: "Home Safety Check", description: "Inspect your space and update insurance."}
+                    ],
+                    love: [
+                        {title: "Community Engagement", description: "Join spring events and volunteer."},
+                        {title: "Reconnect Ritual", description: "Reach out to old friends. Plan meetups."},
+                        {title: "Love Letter", description: "Write appreciation notes to people who matter."}
+                    ],
+                    esteem: [
+                        {title: "New Goals", description: "Start fresh projects. Set ambitious goals."},
+                        {title: "Skill Building", description: "Begin a new course or learn an instrument."},
+                        {title: "Public Speaking", description: "Share your ideas and present your work."}
+                    ],
+                    actualization: [
+                        {title: "Creative Awakening", description: "Start a creative project."},
+                        {title: "Vision Quest", description: "Spend time in nature for clarity."},
+                        {title: "Mentor Others", description: "Guide someone through renewal and growth."}
+                    ]
+                },
+                Summer: {
+                    physiological: [
+                        {title: "Sun Exposure", description: "Get morning sunlight daily."},
+                        {title: "Water Activities", description: "Swimming, sports, or beach time."},
+                        {title: "Summer Foods", description: "Berries, tomatoes, and fresh produce."}
+                    ],
+                    safety: [
+                        {title: "Career Acceleration", description: "Pursue promotions and side projects."},
+                        {title: "Financial Growth", description: "Invest, save, or launch ventures."},
+                        {title: "Boundary Setting", description: "Build protective boundaries."}
+                    ],
+                    love: [
+                        {title: "Family Time", description: "Plan vacations and reunions."},
+                        {title: "Social Events", description: "Host gatherings and celebrations."},
+                        {title: "Relationship Investment", description: "Deepen important bonds."}
+                    ],
+                    esteem: [
+                        {title: "Achievement Push", description: "Complete major projects."},
+                        {title: "Fitness Peak", description: "Build strength and endurance."},
+                        {title: "Leadership", description: "Step into leadership roles."}
+                    ],
+                    actualization: [
+                        {title: "Big Dreams", description: "Dream boldly and take action."},
+                        {title: "Adventure", description: "Travel and explore new places."},
+                        {title: "Create Boldly", description: "Produce significant creative work."}
+                    ]
+                },
+                Autumn: {
+                    physiological: [
+                        {title: "Harvest Foods", description: "Apples, squash, root vegetables."},
+                        {title: "Restorative Yoga", description: "Gentle movement and stretching."},
+                        {title: "Sleep Enhancement", description: "Honor your sleep needs."}
+                    ],
+                    safety: [
+                        {title: "Life Audit", description: "Review year's progress and wins."},
+                        {title: "Financial Review", description: "Assess spending and investments."},
+                        {title: "Release Patterns", description: "Let go of what doesn't serve."}
+                    ],
+                    love: [
+                        {title: "Deepen Bonds", description: "Quality time with loved ones."},
+                        {title: "Appreciation Circles", description: "Celebrate important people."},
+                        {title: "Vulnerable Sharing", description: "Share struggles and grow."}
+                    ],
+                    esteem: [
+                        {title: "Celebrate Wins", description: "Acknowledge your achievements."},
+                        {title: "Skills Assessment", description: "Evaluate growth and strength."},
+                        {title: "Wisdom Sharing", description: "Mentor and share lessons."}
+                    ],
+                    actualization: [
+                        {title: "Reflect Deeply", description: "Journal on life lessons."},
+                        {title: "Life Review", description: "Contemplate purpose and meaning."},
+                        {title: "Create Legacy", description: "Document your story."}
+                    ]
+                },
+                Winter: {
+                    physiological: [
+                        {title: "Embrace Stillness", description: "Allow rest and recovery."},
+                        {title: "Warming Foods", description: "Soups, teas, and spices."},
+                        {title: "Light Therapy", description: "Combat darkness with light."}
+                    ],
+                    safety: [
+                        {title: "Sanctuary Creation", description: "Create a cozy refuge."},
+                        {title: "Self-Care Priority", description: "Rest and heal."},
+                        {title: "Secure Future", description: "Plan and review security."}
+                    ],
+                    love: [
+                        {title: "Traditions", description: "Celebrate with intention."},
+                        {title: "Letter Writing", description: "Thoughtful messages."},
+                        {title: "Intimate Gatherings", description: "Small meaningful moments."}
+                    ],
+                    esteem: [
+                        {title: "Knowledge Building", description: "Learn deeply and widely."},
+                        {title: "Year-End Review", description: "Celebrate full-year wins."},
+                        {title: "Confidence Building", description: "Recognize inner strength."}
+                    ],
+                    actualization: [
+                        {title: "Spiritual Practice", description: "Meditation and contemplation."},
+                        {title: "Purpose Clarity", description: "Connect to your calling."},
+                        {title: "Creative Writing", description: "Journal and poetry."}
+                    ]
+                }
+            },
+            gameTheoryCards: {
+                physiological: {
+                    icon: "🍎",
+                    concept: "Prisoner's Dilemma",
+                    title: "Basic Survival",
+                    description: "Choose cooperation over conflict. Your body and goals are allies, not enemies.",
+                    strategy: "Cooperate with yourself—always."
+                },
+                safety: {
+                    icon: "🛡️",
+                    concept: "Stag Hunt",
+                    title: "Security Play",
+                    description: "Balance risk with protection. Find equilibrium between growth and safety.",
+                    strategy: "Secure foundation, then expand."
+                },
+                love: {
+                    icon: "💕",
+                    concept: "Reciprocal Altruism",
+                    title: "Win-Win",
+                    description: "Give and receive equally. Relationships thrive on mutual benefit.",
+                    strategy: "Build networks where all win."
+                },
+                esteem: {
+                    icon: "👑",
+                    concept: "Competitive Advantage",
+                    title: "Differentiation",
+                    description: "Be authentically YOU. Your uniqueness is your competitive advantage.",
+                    strategy: "Own your distinctive position."
+                },
+                actualization: {
+                    icon: "🚀",
+                    concept: "Evolutionary Payoff",
+                    title: "Legacy Game",
+                    description: "Help others rise. This elevates the entire system.",
+                    strategy: "Play the infinite game."
+                }
+            },
+            seasonGameTheory: {
+                Spring: {
+                    strategy: "EXPANSION GAME",
+                    description: "Spring is growth phase. Plant seeds (relationships, projects, skills). The payoff matrix favors bold action and cooperation.",
+                    focus: [
+                        {title: "New Commitments", details: "Spring rewards initiating relationships"},
+                        {title: "Invest in Growth", details: "Highest ROI season for development"},
+                        {title: "Build Networks", details: "Early cooperation = year-long benefits"}
+                    ]
+                },
+                Summer: {
+                    strategy: "EXECUTION GAME",
+                    description: "Summer is peak capacity. Play dominant strategy—maximum effort. Competition intensifies; differentiation is key.",
+                    focus: [
+                        {title: "Peak Performance", details: "Built for high-intensity execution"},
+                        {title: "Visibility Push", details: "Most visible—leverage momentum"},
+                        {title: "Competitive Edge", details: "Establish market position now"}
+                    ]
+                },
+                Autumn: {
+                    strategy: "CONSOLIDATION GAME",
+                    description: "Autumn is harvest season. Review & optimize. This payoff matrix reveals your true position.",
+                    focus: [
+                        {title: "Harvest Results", details: "Collect spring/summer fruits"},
+                        {title: "Optimize & Refine", details: "Data-driven decisions"},
+                        {title: "Gratitude Play", details: "Celebrate to compound capital"}
+                    ]
+                },
+                Winter: {
+                    strategy: "RESTORATION GAME",
+                    description: "Winter is strategic pause. Play conservation—recharge, reflect, plan. Calculate moves for maximum spring payoff.",
+                    focus: [
+                        {title: "Deep Reflection", details: "Reveals your true North"},
+                        {title: "Knowledge Accumulation", details: "Learning compounds next year"},
+                        {title: "Plan Next Moves", details: "Strategy determines spring success"}
+                    ]
+                }
+            }
+        };
+
+        const seasons = {Spring: "🌱", Summer: "☀️", Autumn: "🍂", Winter: "❄️"};
+
+        document.querySelectorAll(".season-option").forEach(option => {
+            option.addEventListener("click", function() {
+                selectSeason(this.dataset.season);
+            });
+        });
+
+        function selectSeason(season) {
+            app.currentSeason = season;
+            document.querySelectorAll(".season-option").forEach(opt => opt.classList.remove("active"));
+            document.querySelector(`[data-season="${season}"]`).classList.add("active");
+            document.getElementById("startBtn").disabled = false;
+            document.getElementById("startBtn").onclick = () => goToGameTheory();
+        }
+
+        function goToSplash() { switchScreen("splashScreen"); }
+        function goToGameTheory() { switchScreen("gameTheoryScreen"); renderGameTheory(); }
+        function goToStrategies() { switchScreen("strategiesScreen"); renderStrategies(); }
+        function goToChosen() { switchScreen("chosenScreen"); renderChosen(); }
+        function goToVisionBoard() { switchScreen("visionBoardScreen"); renderVisionBoard(); }
+
+        function switchScreen(screenId) {
+            document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+            document.getElementById(screenId).classList.add("active");
+            window.scrollTo(0, 0);
+        }
+
+        function renderGameTheory() {
+            const grid = document.getElementById("gameTheoryGrid");
+            const cards = app.gameTheoryCards;
+            
+            let html = "";
+            Object.keys(cards).forEach((layer, idx) => {
+                const card = cards[layer];
+                html += `
+                    <div class="game-card">
+                        <div class="game-icon">${card.icon}</div>
+                        <div class="game-layer">${layer}</div>
+                        <div class="game-title">${card.title}</div>
+                        <div class="game-concept">${card.concept}</div>
+                        <div style="color: #daa7ff; margin-bottom: 15px; font-size: 0.9rem;">${card.description}</div>
+                        <div class="game-strategy">${card.strategy}</div>
+                    </div>
+                `;
+            });
+            grid.innerHTML = html;
+
+            const seasonBox = document.getElementById("seasonStrategyBox");
+            const seasonTheory = app.seasonGameTheory[app.currentSeason];
+            seasonBox.innerHTML = `
+                <h3 style="color: #d4af37; margin-bottom: 20px; font-size: 1.6rem; font-family: 'Cormorant Garamond', serif;">
+                    🎮 ${seasonTheory.strategy}
+                </h3>
+                <p style="color: #daa7ff; margin-bottom: 25px; line-height: 1.8;">${seasonTheory.description}</p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    ${seasonTheory.focus.map(f => `
+                        <div style="background: rgba(212, 175, 55, 0.1); padding: 20px; border-left: 3px solid #d4af37; border-radius: 8px;">
+                            <strong style="color: #d4af37;">${f.title}</strong>
+                            <p style="color: #daa7ff; font-size: 0.9rem; margin-top: 8px;">${f.details}</p>
+                        </div>
+                    `).join("")}
+                </div>
+            `;
+        }
+
+        function renderStrategies() {
+            const season = app.currentSeason;
+            const filterContainer = document.getElementById("seasonFilter");
+            filterContainer.innerHTML = Object.keys(seasons).map(s => `
+                <button class="season-btn" style="padding: 10px 20px; border: 2px solid ${s === season ? '#d4af37' : '#666'}; background: ${s === season ? 'rgba(212, 175, 55, 0.2)' : 'transparent'}; color: ${s === season ? '#d4af37' : '#daa7ff'}; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.3s ease;" onclick="changeSeason('${s}')">
+                    ${seasons[s]} ${s}
+                </button>
+            `).join("");
+
+            const grid = document.getElementById("strategiesGrid");
+            const strategiesData = app.strategies[season] || {};
+            
+            let html = "";
+            Object.keys(strategiesData).forEach(layerKey => {
+                strategiesData[layerKey].forEach((strategy, idx) => {
+                    const strategyId = `${season}-${layerKey}-${idx}`;
+                    const isSelected = app.chosenStrategies.some(s => s.id === strategyId);
+
+                    html += `
+                        <div class="strategy-tile ${isSelected ? "selected" : ""}" 
+                             onclick="toggleStrategy('${strategyId}', '${season}', '${layerKey}', '${strategy.title}')">
+                            <input type="checkbox" class="strategy-checkbox" ${isSelected ? "checked" : ""}" 
+                                   onclick="toggleStrategy('${strategyId}', '${season}', '${layerKey}', '${strategy.title}'); event.stopPropagation();">
+                            <div class="strategy-category">${layerKey}</div>
+                            <div class="strategy-title">${strategy.title}</div>
+                            <div class="strategy-description">${strategy.description}</div>
+                        </div>
+                    `;
+                });
+            });
+
+            grid.innerHTML = html;
+            document.getElementById("chosenCount").textContent = app.chosenStrategies.length;
+        }
+
+        function changeSeason(season) {
+            app.currentSeason = season;
+            renderStrategies();
+        }
+
+        function toggleStrategy(id, season, layer, title) {
+            const index = app.chosenStrategies.findIndex(s => s.id === id);
+            if (index >= 0) {
+                app.chosenStrategies.splice(index, 1);
+            } else {
+                app.chosenStrategies.push({id, season, layer, title});
+            }
+            renderStrategies();
+        }
+
+        function renderChosen() {
+            const summary = document.getElementById("chosenSummary");
+            const byLayer = {};
+            
+            app.chosenStrategies.forEach(s => {
+                byLayer[s.layer] = (byLayer[s.layer] || 0) + 1;
+            });
+
+            let summaryHTML = `<div class="summary-card"><div class="summary-number">${app.chosenStrategies.length}</div><div class="summary-label">TOTAL</div></div>`;
+            Object.keys(byLayer).forEach(layer => {
+                summaryHTML += `<div class="summary-card"><div class="summary-number">${byLayer[layer]}</div><div class="summary-label">${layer}</div></div>`;
+            });
+            summary.innerHTML = summaryHTML;
+
+            const listContent = document.getElementById("chosenListContent");
+            if (app.chosenStrategies.length === 0) {
+                listContent.innerHTML = "<p style='color: #daa7ff; text-align: center;'>No strategies chosen yet.</p>";
+                return;
+            }
+
+            const byLayerList = {};
+            app.chosenStrategies.forEach(s => {
+                if (!byLayerList[s.layer]) byLayerList[s.layer] = [];
+                byLayerList[s.layer].push(s);
+            });
+
+            let listHTML = "";
+            Object.keys(byLayerList).forEach(layer => {
+                listHTML += `
+                    <div class="chosen-by-layer">
+                        <div class="layer-name">${layer.toUpperCase()}</div>
+                        <div class="chosen-items">
+                            ${byLayerList[layer].map(s => `
+                                <div class="chosen-item">
+                                    ${s.title}
+                                    <button class="chosen-item-remove" onclick="removeChosen('${s.id}')">×</button>
+                                </div>
+                            `).join("")}
+                        </div>
+                    </div>
+                `;
+            });
+            listContent.innerHTML = listHTML;
+        }
+
+        function removeChosen(id) {
+            app.chosenStrategies = app.chosenStrategies.filter(s => s.id !== id);
+            renderChosen();
+            renderStrategies();
+        }
+
+        function renderVisionBoard() {
+            const gallery = document.getElementById("visionPinboard");
+            if (app.visionBoardImages.length === 0) {
+                gallery.innerHTML = '<div class="empty-board"><div class="empty-board-icon">✨</div><p>Begin uploading your inspiration</p></div>';
+                return;
+            }
+
+            gallery.innerHTML = app.visionBoardImages.map((img, idx) => `
+                <div class="pinned-image" style="width: ${img.width || 200}px;" id="image-${idx}">
+                    <img src="${img.src}" alt="Vision" style="--rotation: ${img.rotation || 0}deg;">
+                </div>
+            `).join("");
+        }
+
+        document.getElementById("imageFileInput").addEventListener("change", function(e) {
+            const files = Array.from(e.target.files);
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = function() {
+                        app.visionBoardImages.push({
+                            src: event.target.result,
+                            rotation: 0,
+                            width: Math.min(img.width, 250)
+                        });
+                        renderVisionBoard();
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+            e.target.value = "";
+        });
+
+        async function takeScreenshot(screenId, filename) {
+            const loading = document.getElementById("loading");
+            loading.classList.add("active");
+
+            try {
+                const element = document.getElementById(screenId);
+                const canvas = await html2canvas(element, {
+                    backgroundColor: "#0f0620",
+                    scale: 2,
+                    logging: false,
+                    allowTaint: true,
+                    useCORS: true
+                });
+
+                const link = document.createElement("a");
+                link.href = canvas.toDataURL("image/png");
+                link.download = `${filename}-${new Date().toISOString().slice(0,10)}.png`;
+                link.click();
+
+                loading.classList.remove("active");
+            } catch (err) {
+                loading.classList.remove("active");
+                alert("Screenshot failed");
+            }
+        }
+
+        async function shareScreen(title) {
+            const shareText = `Crafting my ${title} on HierarchiVision 🎮✨ Strategic vision board with game theory. #VisionBoard #GameTheory`;
+            
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: `HierarchiVision - ${title}`,
+                        text: shareText
+                    });
+                } catch (err) {
+                    console.log("Share cancelled");
+                }
+            } else {
+                const encodedText = encodeURIComponent(shareText);
+                window.open(`https://twitter.com/intent/tweet?text=${encodedText}`, '_blank');
+            }
+        }
+
+        async function exportToPDF() {
+            const loading = document.getElementById("loading");
+            loading.classList.add("active");
+
+            try {
+                const {jsPDF} = window.jspdf;
+                const doc = new jsPDF();
+                
+                doc.setFont("Cormorant Garamond", "bold");
+                doc.setFontSize(24);
+                doc.setTextColor(212, 175, 55);
+                doc.text("HIERARCHIVISION JOURNEY", 20, 30);
+                
+                doc.setFont("Montserrat", "normal");
+                doc.setFontSize(12);
+                doc.setTextColor(100, 100, 100);
+                doc.text(`Season: ${app.currentSeason}`, 20, 45);
+                doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 55);
+                
+                let yPosition = 70;
+                
+                doc.setFont("Cormorant Garamond", "bold");
+                doc.setFontSize(14);
+                doc.setTextColor(212, 175, 55);
+                doc.text("Strategic Selections:", 20, yPosition);
+                yPosition += 10;
+                
+                doc.setFont("Montserrat", "normal");
+                doc.setFontSize(11);
+                doc.setTextColor(100, 100, 100);
+                
+                const byLayer = {};
+                app.chosenStrategies.forEach(s => {
+                    if (!byLayer[s.layer]) byLayer[s.layer] = [];
+                    byLayer[s.layer].push(s.title);
+                });
+                
+                Object.keys(byLayer).forEach(layer => {
+                    if (yPosition > 250) {
+                        doc.addPage();
+                        yPosition = 20;
+                    }
+                    doc.setFont("Montserrat", "bold");
+                    doc.text(`${layer}:`, 25, yPosition);
+                    yPosition += 7;
+                    doc.setFont("Montserrat", "normal");
+                    byLayer[layer].forEach(title => {
+                        if (yPosition > 250) {
+                            doc.addPage();
+                            yPosition = 20;
+                        }
+                        doc.text(`• ${title}`, 30, yPosition);
+                        yPosition += 7;
+                    });
+                    yPosition += 3;
+                });
+                
+                doc.save(`hierarchivision-${app.currentSeason}-${new Date().toISOString().slice(0,10)}.pdf`);
+                loading.classList.remove("active");
+            } catch (err) {
+                loading.classList.remove("active");
+                alert("PDF export failed");
+            }
+        }
+
+        function saveBoard() {
+            const boardData = {
+                season: app.currentSeason,
+                strategies: app.chosenStrategies,
+                images: app.visionBoardImages.map(img => ({
+                    src: img.src,
+                    rotation: img.rotation,
+                    width: img.width
+                })),
+                savedAt: new Date().toISOString()
+            };
+            localStorage.setItem(`hierarchivision-${app.currentSeason}`, JSON.stringify(boardData));
+            alert("✨ Vision board saved!");
+        }
+
+        function downloadBoard() {
+            if (app.visionBoardImages.length === 0) {
+                alert("Please add images first!");
+                return;
+            }
+
+            let imagesHTML = "";
+            app.visionBoardImages.forEach((img, idx) => {
+                imagesHTML += `
+                    <div style="background: white; padding: 10px; border-radius: 3px; box-shadow: 0 12px 25px rgba(0,0,0,0.3); margin: 15px;">
+                        <img src="${img.src}" alt="Vision" style="transform: rotate(${img.rotation}deg); max-width: 250px; border-radius: 2px;">
+                    </div>
+                `;
+            });
+
+            const html = `<!DOCTYPE html>
+<html>
+<head>
+    <title>HierarchiVision - ${app.currentSeason}</title>
+    <style>
+        body { font-family: 'Cormorant Garamond', serif; background: linear-gradient(135deg, #c4a57b 0%, #d4a574 100%); padding: 40px 20px; text-align: center; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        h1 { font-size: 2.5rem; color: #2a2a2a; margin-bottom: 30px; }
+        .board { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
+        .strategies { margin-top: 40px; background: rgba(255,255,255,0.9); padding: 30px; border-radius: 10px; }
+        .strategy-list { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+        .tag { background: #d4af37; color: white; padding: 10px 18px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✨ HIERARCHIVISION - ${app.currentSeason} ✨</h1>
+        <div class="board">${imagesHTML}</div>
+        <div class="strategies">
+            <h2 style="color: #2a2a2a;">My Strategic Choices</h2>
+            <div class="strategy-list">
+                ${app.chosenStrategies.map(s => `<span class="tag">${s.title}</span>`).join('')}
+            </div>
+        </div>
+    </div>
+</body>
+</html>`;
+
+            const blob = new Blob([html], {type: "text/html"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `vision-board-${app.currentSeason}-${new Date().toISOString().slice(0,10)}.html`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
